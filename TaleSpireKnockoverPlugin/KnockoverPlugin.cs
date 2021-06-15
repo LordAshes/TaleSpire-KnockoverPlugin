@@ -11,7 +11,7 @@ namespace LordAshes
     {
         // Plugin info
         private const string Guid = "org.lordashes.plugins.knockover";
-        private const string Version = "1.0.0.0";
+        private const string Version = "1.0.2.0";
 
         // Content directory
         private string dir = UnityEngine.Application.dataPath.Substring(0, UnityEngine.Application.dataPath.LastIndexOf("/")) + "/TaleSpire_CustomData/";
@@ -39,7 +39,7 @@ namespace LordAshes
                     StatMessaging.SetInfo(radialCreature, KnockoverPlugin.Guid, System.DateTime.UtcNow.ToString());
                 },
                 Icon = icon,
-                Title = "On Character",
+                Title = "Knockover",
                 CloseMenuOnActivate = true
             }, Reporter);        
 
