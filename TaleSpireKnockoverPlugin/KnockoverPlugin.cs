@@ -6,7 +6,8 @@ namespace LordAshes
 {
     [BepInPlugin(Guid, "Knockover Plug-In", Version)]
     [BepInDependency(RadialUI.RadialUIPlugin.Guid)]
-    public class HandoutsPlugin : BaseUnityPlugin
+    [BepInDependency(StatMessaging.Guid)]
+    public class KnockoverPlugin : BaseUnityPlugin
     {
         // Plugin info
         private const string Guid = "org.lordashes.plugins.knockover";
@@ -34,19 +35,37 @@ namespace LordAshes
             {
                 Action = (mmi,obj)=>
                 {
-                    CreatureBoardAsset asset;
-                    CreaturePresenter.TryGetAsset(radialCreature, out asset);
-                    if(asset!=null)
-                    {
-                        asset.Creature.Knockdown();
-                    }
+                    // When knockover is selected post it to StatMessaging (distribute to all clients)
+                    StatMessaging.SetInfo(radialCreature, KnockoverPlugin.Guid, System.DateTime.UtcNow.ToString());
                 },
                 Icon = icon,
                 Title = "On Character",
                 CloseMenuOnActivate = true
             }, Reporter);        
+
+            StatMessaging.Subscribe(KnockoverPlugin.Guid, (changes)=>
+            {
+                // When knockover message is received
+                foreach(StatMessaging.Change change in changes)
+                {
+                    // Process knockover
+                    CreatureBoardAsset asset;
+                    CreaturePresenter.TryGetAsset(change.cid, out asset);
+                    if(asset!=null)
+                    {
+                        asset.Creature.Knockdown();
+                    }
+                }
+            });
+               
         }
 
+        /// <summary>
+        /// Method to track which asset has the radial menu open
+        /// </summary>
+        /// <param name="selected"></param>
+        /// <param name="radialMenu"></param>
+        /// <returns></returns>
         private bool Reporter(NGuid selected, NGuid radialMenu)
         {
             radialCreature = new CreatureGuid(radialMenu);
